@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 
 export default function DepartmentGrid({ items }) {
   return (
-    <section className="mx-auto max-w-7xl px-4 pb-8 sm:px-6 sm:pb-12">
+    <section className="mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-center px-4 py-8 sm:px-6 sm:py-12">
       <h2 className="mb-4 text-xl font-bold text-slate-900 sm:mb-6 sm:text-2xl">
         Shop By Department
       </h2>

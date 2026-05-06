@@ -2,11 +2,11 @@ import { Link } from 'react-router-dom'
 
 export default function HeroBanner({ hero }) {
   return (
-    <section className="relative overflow-hidden border-b border-slate-200 bg-slate-900 text-white">
+    <section className="relative min-h-[100svh] overflow-hidden border-b border-slate-200 bg-slate-900 text-white">
       <img
         src={hero.image}
         alt="Department store hero promotion"
-        className="h-[62vh] min-h-[420px] w-full object-cover opacity-45"
+        className="h-[100svh] w-full object-cover opacity-45"
       />
       <div className="absolute inset-0 mx-auto flex max-w-7xl items-center px-4 sm:px-6">
         <div className="max-w-xl">
