@@ -46,18 +46,9 @@ export default function Navbar({ userName, onOpenAuth, onSignOut, cartCount }) {
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setIsMobileNavOpen((prev) => !prev)}
-            className="grid h-10 w-10 place-items-center rounded-md border border-slate-300 text-slate-800 md:hidden"
-            aria-label="Toggle navigation menu"
-          >
-            <span className="text-lg">☰</span>
-          </button>
-          <NavLink to="/" className="text-lg font-black tracking-tight text-slate-900 sm:text-xl">
-            AS Department
-          </NavLink>
-        </div>
+        <NavLink to="/" className="text-lg font-black tracking-tight text-slate-900 sm:text-xl">
+          AS Department
+        </NavLink>
         <div ref={accountMenuRef} className="relative flex items-center gap-2">
           <button
             onClick={() => setIsAccountOpen((prev) => !prev)}
@@ -79,6 +70,13 @@ export default function Navbar({ userName, onOpenAuth, onSignOut, cartCount }) {
               </span>
             )}
           </Link>
+          <button
+            onClick={() => setIsMobileNavOpen((prev) => !prev)}
+            className="grid h-10 w-10 place-items-center rounded-md border border-slate-300 text-slate-800 md:hidden"
+            aria-label="Toggle navigation menu"
+          >
+            <span className="text-lg">☰</span>
+          </button>
 
           {isAccountOpen && (
             <div className="absolute right-0 top-12 z-50 w-72 border border-slate-300 bg-white p-5 shadow-xl">
@@ -123,26 +121,43 @@ export default function Navbar({ userName, onOpenAuth, onSignOut, cartCount }) {
         </div>
       </nav>
 
-      {isMobileNavOpen && (
-        <nav className="border-t border-slate-200 bg-white md:hidden">
-          <div className="mx-auto grid max-w-7xl gap-2 px-4 py-3 sm:px-6">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.slug}
-                to={`/department/${item.slug}`}
-                className={({ isActive }) =>
-                  `rounded-lg px-3 py-2 text-sm font-semibold ${
-                    isActive ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-800'
-                  }`
-                }
-                onClick={closeAllMenus}
-              >
-                {item.label}
-              </NavLink>
-            ))}
-          </div>
-        </nav>
-      )}
+      <div
+        onClick={() => setIsMobileNavOpen(false)}
+        className={`fixed inset-0 z-40 bg-slate-900/40 transition-opacity duration-300 md:hidden ${
+          isMobileNavOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
+        }`}
+      />
+      <nav
+        className={`fixed right-0 top-0 z-50 h-screen w-72 border-l border-slate-200 bg-white p-4 shadow-2xl transition-transform duration-300 ease-out md:hidden ${
+          isMobileNavOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+          <p className="text-sm font-bold text-slate-900">Menu</p>
+          <button
+            onClick={() => setIsMobileNavOpen(false)}
+            className="rounded-md border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-700"
+          >
+            Close
+          </button>
+        </div>
+        <div className="mt-4 grid gap-2">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.slug}
+              to={`/department/${item.slug}`}
+              className={({ isActive }) =>
+                `rounded-lg px-3 py-2 text-sm font-semibold transition ${
+                  isActive ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-800 hover:bg-slate-200'
+                }`
+              }
+              onClick={closeAllMenus}
+            >
+              {item.label}
+            </NavLink>
+          ))}
+        </div>
+      </nav>
     </header>
   )
 }
