@@ -4,31 +4,61 @@ import Navbar from './Navbar'
 import Footer from './Footer'
 import AuthModal from './AuthModal'
 
+const ACCOUNTS_STORAGE_KEY = 'as-shop-accounts'
+const USER_STORAGE_KEY = 'as-shop-user'
+
 export default function Layout() {
   const [isAuthOpen, setIsAuthOpen] = useState(false)
   const [userName, setUserName] = useState('')
   const [cartItems, setCartItems] = useState([])
+  const [accounts, setAccounts] = useState([])
 
   useEffect(() => {
-    const savedName = window.localStorage.getItem('as-shop-user')
+    const savedName = window.localStorage.getItem(USER_STORAGE_KEY)
     const savedCart = window.localStorage.getItem('as-shop-cart')
+    const savedAccounts = window.localStorage.getItem(ACCOUNTS_STORAGE_KEY)
+    const parsedAccounts = savedAccounts ? JSON.parse(savedAccounts) : []
+
     if (savedName) setUserName(savedName)
     if (savedCart) setCartItems(JSON.parse(savedCart))
+    setAccounts(parsedAccounts)
+    window.localStorage.setItem(ACCOUNTS_STORAGE_KEY, JSON.stringify(parsedAccounts))
   }, [])
 
   useEffect(() => {
     window.localStorage.setItem('as-shop-cart', JSON.stringify(cartItems))
   }, [cartItems])
 
-  function handleSignIn(name) {
-    setUserName(name)
-    window.localStorage.setItem('as-shop-user', name)
-    setIsAuthOpen(false)
-  }
-
   function handleSignOut() {
     setUserName('')
-    window.localStorage.removeItem('as-shop-user')
+    window.localStorage.removeItem(USER_STORAGE_KEY)
+  }
+
+  function handleAuthenticate(form, mode) {
+    const account = accounts.find((item) => item.email === form.email)
+
+    if (mode === 'signup') {
+      if (account) {
+        return { success: false, message: 'This email is already registered. Please sign in.' }
+      }
+      const updatedAccounts = [...accounts, { email: form.email, password: form.password }]
+      setAccounts(updatedAccounts)
+      window.localStorage.setItem(ACCOUNTS_STORAGE_KEY, JSON.stringify(updatedAccounts))
+      return {
+        success: true,
+        message: 'Account created. Please sign in with your new email and password.',
+      }
+    }
+
+    if (!account || account.password !== form.password) {
+      return { success: false, message: 'Invalid email or password. Please try again.' }
+    }
+
+    const displayName = form.email.split('@')[0]
+    setUserName(displayName)
+    window.localStorage.setItem(USER_STORAGE_KEY, displayName)
+    setIsAuthOpen(false)
+    return { success: true, message: 'Signed in successfully.' }
   }
 
   function addToCart(product, departmentSlug) {
@@ -68,7 +98,11 @@ export default function Layout() {
         <Outlet context={{ addToCart, cartItems, updateCartQty, removeFromCart, clearCart, cartCount }} />
       </main>
       <Footer />
-      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} onSignIn={handleSignIn} />
+      <AuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+        onAuthenticate={handleAuthenticate}
+      />
     </div>
   )
 }
